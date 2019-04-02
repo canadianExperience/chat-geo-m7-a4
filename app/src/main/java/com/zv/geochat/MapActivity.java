@@ -5,12 +5,17 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -21,15 +26,26 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.zv.geochat.map.MapClusterItem;
 import com.zv.geochat.model.ChatMessage;
+import com.zv.geochat.model.ChatMessageBody;
 import com.zv.geochat.provider.ChatMessageStore;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -54,6 +70,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+//        GoogleMapOptions options = new GoogleMapOptions();
+//        options.mapType(GoogleMap.MAP_TYPE_TERRAIN);
+//        options.zoomControlsEnabled(true);
+//        options.compassEnabled(true);
+
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -106,20 +130,103 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         clusterManager = new ClusterManager<MapClusterItem>(this, mMap);
-        mMap.setOnCameraChangeListener(clusterManager);
+
+        //mMap.setOnCameraChangeListener(clusterManager);
+
+        mMap.setOnCameraIdleListener(clusterManager);
+        mMap.setOnMarkerClickListener(clusterManager);
+        clusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MapClusterItem>() {
+            @Override
+            public boolean onClusterClick(Cluster<MapClusterItem> cluster) {
+
+                LatLng latLng = cluster.getPosition();
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                //CameraUpdate zoom=CameraUpdateFactory.zoomIn();
+                CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+                mMap.animateCamera(zoom);
+
+               // Log.e("I clicked @ ", "Cluster which consumes whole list of ClusterItems");
+                return false;
+            }
+        });
+//        mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
+//            @Override
+//            public void onCircleClick(Circle circle) {
+//                LatLng latLng = circle.getCenter();
+//                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+//                CameraUpdate zoom=CameraUpdateFactory.zoomIn();
+//                //CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+//                mMap.animateCamera(zoom);
+//
+//            }
+//        });
+
+
+
         //---- create markers
-        List<ChatMessage> chatMessageList = chatMessageStore.getList();
+   List<ChatMessage> chatMessageList = chatMessageStore.getList();
+
+//        List<ChatMessage> chatList = chatMessageStore.getList();
+//        List<ChatMessage> chatMessageList = combineMessages(chatList);
+
         for (ChatMessage chatMessage : chatMessageList) {
             // do something with object
             if (chatMessage.getBody().hasLocation()){
-                MapClusterItem myItem = new MapClusterItem(chatMessage.getBody().getLat(),
-                        chatMessage.getBody().getLng());
+                String body = chatMessage.getBody().getText();
+                String title = chatMessage.getUserName();
+
+                Double lat = chatMessage.getBody().getLat();
+                Double lng = chatMessage.getBody().getLng();
+
+                MapClusterItem myItem = new MapClusterItem(lat,
+                        lng, title, body);
                 //Log.v(TAG,"add cluster item: " + myItem);
                 clusterManager.addItem(myItem);
             }
         }
+
+
+        //clusterManager.cluster();
         setMyLocationEnabled();
     }
+
+    private List<ChatMessage> combineMessages(List<ChatMessage> chatMessageList){
+
+        HashMap<String,ChatMessage> map = new HashMap<>();
+
+        for(ChatMessage chatMessage : chatMessageList){
+            String name = chatMessage.getUserName();
+            Double lat = chatMessage.getBody().getLat();
+            Double lng = chatMessage.getBody().getLng();
+            String message = chatMessage.getBody().getText();
+
+            if(lat!=null && lng!=null) {
+                if (map.containsKey(name)) {
+                    ChatMessage mapItem = map.get(name);
+                    ChatMessageBody body = mapItem.getBody();
+                    String originalMsg = body.getText();
+                    String newMessage = originalMsg + message;
+                    body.setText(newMessage);
+                } else {
+
+                   // mapItem.setUserName(name);
+                    ChatMessageBody chatMessageBody = new ChatMessageBody(message, lng, lat);
+                    ChatMessage mapItem = new ChatMessage(name, chatMessageBody);
+                   // mapItem.setBody(chatMessageBody);
+
+                    map.put(name, mapItem);
+                }
+            }
+
+        }
+
+        // Convert all Map values to a List
+        List<ChatMessage> newList = new ArrayList(map.values());
+
+        return newList;
+    }
+
+
 
     private void setMyLocationEnabled() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
