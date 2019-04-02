@@ -71,13 +71,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-//        GoogleMapOptions options = new GoogleMapOptions();
-//        options.mapType(GoogleMap.MAP_TYPE_TERRAIN);
-//        options.zoomControlsEnabled(true);
-//        options.compassEnabled(true);
-
-
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -130,36 +123,47 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         clusterManager = new ClusterManager<MapClusterItem>(this, mMap);
-
+        clusterManager.getRenderer().setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MapClusterItem>() {
+            @Override
+            public boolean onClusterClick(Cluster<MapClusterItem> cluster) {
+               Float zoom =  mMap.getCameraPosition().zoom;
+               zoom = zoom + 3;
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(cluster.getPosition().latitude, cluster.getPosition().longitude), zoom));
+                return true;
+            }
+        });
         //mMap.setOnCameraChangeListener(clusterManager);
 
         mMap.setOnCameraIdleListener(clusterManager);
         mMap.setOnMarkerClickListener(clusterManager);
-        clusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MapClusterItem>() {
+
+        // setInfoWindowAdapter
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
             @Override
-            public boolean onClusterClick(Cluster<MapClusterItem> cluster) {
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
 
-                LatLng latLng = cluster.getPosition();
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                //CameraUpdate zoom=CameraUpdateFactory.zoomIn();
-                CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
-                mMap.animateCamera(zoom);
+            // Set infoWindow content
+            @Override
+            public View getInfoContents(Marker marker) {
+                //Get view
+                View v = getLayoutInflater().inflate(R.layout.info_window, null);
+                //Get infoWindow controls
+                TextView userName = v.findViewById(R.id.txtUserName);
+                TextView userMessage = v.findViewById(R.id.txtMessage);
+              //  ImageView bubble = v.findViewById(R.id.bubbleMessageContainer);
 
-               // Log.e("I clicked @ ", "Cluster which consumes whole list of ClusterItems");
-                return false;
+                userName.setText(marker.getTitle());
+                userMessage.setText(marker.getSnippet());
+
+
+                return v;
             }
         });
-//        mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
-//            @Override
-//            public void onCircleClick(Circle circle) {
-//                LatLng latLng = circle.getCenter();
-//                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                CameraUpdate zoom=CameraUpdateFactory.zoomIn();
-//                //CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
-//                mMap.animateCamera(zoom);
-//
-//            }
-//        });
+
+
 
 
 
@@ -177,6 +181,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 Double lat = chatMessage.getBody().getLat();
                 Double lng = chatMessage.getBody().getLng();
+
+                //Info window
 
                 MapClusterItem myItem = new MapClusterItem(lat,
                         lng, title, body);

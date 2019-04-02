@@ -39,14 +39,14 @@
     </style>
 
     <style name="TypeMessageStyle">
-        <item name="android:textSize">25sp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:textStyle">normal</item>
         <item name="android:typeface">serif</item>
         <item name="android:textColorHint">@color/icons</item>
     </style>
 
     <style name="UserStyle">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:typeface">monospace</item>
         <item name="android:textColor">@color/icons</item>

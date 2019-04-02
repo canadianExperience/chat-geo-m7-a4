@@ -57,12 +57,13 @@
 
 
             <ImageView
+                android:id="@+id/imgLocationIcon"
                 android:layout_width="wrap_content"
-                android:layout_height="18dp"
-                app:srcCompat="@drawable/ic_msg_location"
+                android:layout_height="14dp"
                 android:layout_gravity="center_vertical"
                 android:clickable="true"
-                android:id="@+id/imgLocationIcon" />
+
+                app:srcCompat="@drawable/ic_msg_location" />
 
             <!--<TextView-->
                 <!--android:id="@+id/txtInfo"-->
