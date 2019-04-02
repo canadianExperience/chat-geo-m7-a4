@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.3"
     defaultConfig {
         applicationId "com.zv.geochat"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"

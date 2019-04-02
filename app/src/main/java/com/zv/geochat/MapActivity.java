@@ -164,10 +164,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
         //---- create markers
-   List<ChatMessage> chatMessageList = chatMessageStore.getList();
+  // List<ChatMessage> chatMessageList = chatMessageStore.getList();
 
-//        List<ChatMessage> chatList = chatMessageStore.getList();
-//        List<ChatMessage> chatMessageList = combineMessages(chatList);
+        List<ChatMessage> chatList = chatMessageStore.getList();
+        List<ChatMessage> chatMessageList = combineMessages(chatList);
 
         for (ChatMessage chatMessage : chatMessageList) {
             // do something with object
@@ -205,11 +205,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     ChatMessage mapItem = map.get(name);
                     ChatMessageBody body = mapItem.getBody();
                     String originalMsg = body.getText();
-                    String newMessage = originalMsg + message;
+                    String newMessage = originalMsg + "\n" + message;
                     body.setText(newMessage);
                 } else {
 
-                   // mapItem.setUserName(name);
+                   //mapItem.setUserName(name);
                     ChatMessageBody chatMessageBody = new ChatMessageBody(message, lng, lat);
                     ChatMessage mapItem = new ChatMessage(name, chatMessageBody);
                    // mapItem.setBody(chatMessageBody);

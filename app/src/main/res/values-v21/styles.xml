@@ -6,4 +6,49 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
+
+
+
+
+    <!-- Additional application theme. -->
+
+    <style name="AppThemeNew" parent="AppTheme.NoActionBar">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:windowBackground">@color/background_window</item>
+    </style>
+
+
+    //My font styles
+
+    <!--<style name="ChatMessageTextStyle">-->
+        <!--<item name="android:textSize">18sp</item>-->
+        <!--<item name="android:textStyle">normal|bold</item>-->
+        <!--<item name="android:textColor">@color/colorPrimary</item>-->
+        <!--<item name="android:typeface">serif</item>-->
+    <!--</style>-->
+
+    <style name="InfoTextStyle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:typeface">monospace</item>
+    </style>
+
+    <style name="TypeMessageStyle">
+        <item name="android:textSize">25sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:typeface">serif</item>
+        <item name="android:textColorHint">@color/icons</item>
+    </style>
+
+    <style name="UserStyle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textColor">@color/icons</item>
+    </style>
 </resources>
