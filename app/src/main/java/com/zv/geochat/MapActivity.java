@@ -5,16 +5,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,14 +24,10 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.zv.geochat.map.MapClusterItem;
@@ -41,11 +35,9 @@ import com.zv.geochat.model.ChatMessage;
 import com.zv.geochat.model.ChatMessageBody;
 import com.zv.geochat.provider.ChatMessageStore;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -123,6 +115,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         clusterManager = new ClusterManager<MapClusterItem>(this, mMap);
+
+        // Zoom map by clicking on cluster
         clusterManager.getRenderer().setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MapClusterItem>() {
             @Override
             public boolean onClusterClick(Cluster<MapClusterItem> cluster) {
@@ -132,7 +126,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             }
         });
-        //mMap.setOnCameraChangeListener(clusterManager);
 
         mMap.setOnCameraIdleListener(clusterManager);
         mMap.setOnMarkerClickListener(clusterManager);
@@ -148,57 +141,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             // Set infoWindow content
             @Override
             public View getInfoContents(Marker marker) {
-                //Get view
                 View v = getLayoutInflater().inflate(R.layout.info_window, null);
-                //Get infoWindow controls
                 TextView userName = v.findViewById(R.id.txtUserName);
                 TextView userMessage = v.findViewById(R.id.txtMessage);
-              //  ImageView bubble = v.findViewById(R.id.bubbleMessageContainer);
 
                 userName.setText(marker.getTitle());
                 userMessage.setText(marker.getSnippet());
-
 
                 return v;
             }
         });
 
-
-
-
-
         //---- create markers
-  // List<ChatMessage> chatMessageList = chatMessageStore.getList();
 
         List<ChatMessage> chatList = chatMessageStore.getList();
         List<ChatMessage> chatMessageList = combineMessages(chatList);
 
         for (ChatMessage chatMessage : chatMessageList) {
-            // do something with object
+
             if (chatMessage.getBody().hasLocation()){
                 String body = chatMessage.getBody().getText();
                 String title = chatMessage.getUserName();
-
                 Double lat = chatMessage.getBody().getLat();
                 Double lng = chatMessage.getBody().getLng();
 
-                //Info window
-
                 MapClusterItem myItem = new MapClusterItem(lat,
                         lng, title, body);
-                //Log.v(TAG,"add cluster item: " + myItem);
+                Log.v(TAG,"add cluster item: " + myItem);
                 clusterManager.addItem(myItem);
             }
         }
 
-
-        //clusterManager.cluster();
         setMyLocationEnabled();
     }
 
     private List<ChatMessage> combineMessages(List<ChatMessage> chatMessageList){
 
-        HashMap<String,ChatMessage> map = new HashMap<>();
+        HashMap<String,ChatMessage> hashMap = new HashMap<>();
 
         for(ChatMessage chatMessage : chatMessageList){
             String name = chatMessage.getUserName();
@@ -207,32 +186,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             String message = chatMessage.getBody().getText();
 
             if(lat!=null && lng!=null) {
-                if (map.containsKey(name)) {
-                    ChatMessage mapItem = map.get(name);
+                if (hashMap.containsKey(name)) {
+                    ChatMessage mapItem = hashMap.get(name);
                     ChatMessageBody body = mapItem.getBody();
                     String originalMsg = body.getText();
                     String newMessage = originalMsg + "\n" + message;
                     body.setText(newMessage);
                 } else {
-
-                   //mapItem.setUserName(name);
                     ChatMessageBody chatMessageBody = new ChatMessageBody(message, lng, lat);
                     ChatMessage mapItem = new ChatMessage(name, chatMessageBody);
-                   // mapItem.setBody(chatMessageBody);
 
-                    map.put(name, mapItem);
+                    hashMap.put(name, mapItem);
                 }
             }
-
         }
 
-        // Convert all Map values to a List
-        List<ChatMessage> newList = new ArrayList(map.values());
+        // Convert all hashMap values to a List
+        List<ChatMessage> newList = new ArrayList(hashMap.values());
 
         return newList;
     }
-
-
 
     private void setMyLocationEnabled() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)

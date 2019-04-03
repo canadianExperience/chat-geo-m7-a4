@@ -45,7 +45,7 @@
                 android:layout_weight="8"
                 android:id="@+id/edtMessage"
                 android:layout_gravity="center_vertical"
-                android:hint="Type your message...." />
+                android:hint="@string/type_your_message" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_send_message"
@@ -58,6 +58,5 @@
         </TableRow>
 
     </TableLayout>
-
 
 </RelativeLayout>

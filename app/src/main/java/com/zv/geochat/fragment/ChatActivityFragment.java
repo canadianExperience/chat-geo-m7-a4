@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.support.design.widget.Snackbar;
+import android.widget.Toast;
 
 import com.zv.geochat.Constants;
 import com.zv.geochat.R;
@@ -99,8 +100,11 @@ public class ChatActivityFragment extends Fragment implements SharedPreferences.
             double longitude = myLocationProvider.getLastLocation().getLongitude();
             double latitude = myLocationProvider.getLastLocation().getLatitude();
             msgBody = new ChatMessageBody(messageText, longitude, latitude);
-           Snackbar.make(getView(), "Location - lng: " + longitude +", lat: " + latitude,
-                    Snackbar.LENGTH_LONG).show();
+//           Snackbar.make(getView(), "Location - lng: " + longitude +", lat: " + latitude,
+//                    Snackbar.LENGTH_LONG).show();
+
+            Toast.makeText(getActivity(), "Location - lng: " + longitude +", lat: " + latitude,
+                    Toast.LENGTH_LONG).show();
 
         } else {
             msgBody = new ChatMessageBody(messageText);

@@ -33,21 +33,14 @@
             </intent-filter>
         </activity>
 
-
-
-
-
-
-
         <activity
             android:name=".ChatActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_chat"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNew"
+            android:theme="@style/AppThemeNew">
 
-            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zv.geochat.MainActivity" />

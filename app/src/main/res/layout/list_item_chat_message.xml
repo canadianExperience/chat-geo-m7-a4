@@ -10,13 +10,6 @@
         android:layout_alignParentLeft="true"
         android:orientation="vertical">
 
-        <!--<LinearLayout-->
-            <!--android:id="@+id/bubbleMessageContainer"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="left"-->
-            <!--android:background="@drawable/ic_chat_bubble2"-->
-            <!--android:orientation="vertical">-->
         <LinearLayout
             android:id="@+id/bubbleMessageContainer"
             android:layout_width="wrap_content"
@@ -38,15 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/txtUser"-->
-                <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-                <!--android:text="User"-->
-                <!--android:paddingRight="@dimen/item_padding"-->
-                <!--android:textStyle="normal|bold" />-->
-
             <TextView
                 style="@style/UserStyle"
                 android:layout_width="wrap_content"
@@ -62,18 +46,9 @@
                 android:layout_height="14dp"
                 android:layout_gravity="center_vertical"
                 android:clickable="true"
+                app:srcCompat="@drawable/ic_location_white" />
+                <!--app:srcCompat="@drawable/ic_msg_location" />-->
 
-                app:srcCompat="@drawable/ic_msg_location" />
-
-            <!--<TextView-->
-                <!--android:id="@+id/txtInfo"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="left"-->
-                <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-                <!--android:text="Sep 21, 2016 10:12 pm"-->
-                <!--android:textColor="@android:color/darker_gray"-->
-                <!--android:layout_weight="1" />-->
 
             <TextView
                 style="@style/InfoTextStyle"
@@ -83,7 +58,6 @@
                 android:layout_gravity="left"
                 android:text="Sep 21, 2016 10:12 pm"
                 android:layout_weight="1" />
-
 
         </LinearLayout>
 
